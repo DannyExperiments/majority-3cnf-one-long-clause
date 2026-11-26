@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shift the independent-set threshold</title>
+<style>
+:root{color-scheme:dark;--bg:#101b2e;--panel:#182942;--ink:#f3f7ff;--muted:#becce3;--aqua:#7be4d3;--orange:#ffc48a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.52 system-ui,sans-serif}
+main{max-width:62rem;margin:auto;padding:clamp(1rem,4vw,2.5rem)}
+h1{font-weight:720;line-height:1.1;font-size:clamp(2rem,7vw,3.6rem);margin:0 0 .7rem}
+h2{font-size:1.15rem;margin:0 0 .65rem}
+p{margin:.3rem 0 .9rem}
+.lead,.help,.metric small{color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:1rem;align-items:start}
+.panel{background:var(--panel);border:1px solid #394f6c;border-radius:.95rem;padding:1rem}
+canvas{display:block;width:100%;aspect-ratio:6/5;margin:auto;touch-action:pan-y;cursor:grab}
+canvas:active{cursor:grabbing}
+fieldset{border:0;padding:0;margin:0 0 .8rem}
+legend{font-weight:700;margin:0 0 .35rem}
+.choice{min-height:2.75rem;display:flex;align-items:center;gap:.65rem;cursor:pointer}
+input{accent-color:var(--aqua)}
+.choice input{width:1.2rem;height:1.2rem;margin:0}
+input[type=range]{width:100%;min-height:2.75rem;margin:0}
+input:focus-visible,summary:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+.key{display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-weight:650;margin:.3rem 0 .75rem}
+.source{color:var(--aqua)}
+.padding{color:var(--orange)}
+.metric{border-top:1px solid #48607f;padding:.7rem 0}
+.metric strong{display:block;font-size:1.26rem;font-variant-numeric:tabular-nums}
+.metric small{font-size:.9rem}
+.verdict{border:1px solid currentColor;border-radius:.55rem;padding:.65rem .75rem;font-weight:700;margin:0}
+details{margin-top:1rem}
+summary{cursor:pointer;font-weight:700;min-height:2.75rem}
+#set-list{overflow-wrap:anywhere}
+@media(max-width:43rem){.grid{grid-template-columns:1fr}.panel{padding:.85rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>Shift the threshold to eight</h1>
+<p class="lead">The input graph passes when it has at least six independent sets. Join it to an edge and watch the comparison move to the power of two.</p>
+<div class="grid">
+  <section class="panel">
+    <h2>The joined graph</h2>
+    <canvas id="scene" width="660" height="550" aria-label="Rotatable graph with a four-vertex source and a two-vertex padding edge. Every source vertex is joined to both padding vertices."></canvas>
+    <div class="key"><span class="source">● Input B</span><span class="padding">● Padding H</span><span>━ Join edges</span></div>
+    <label for="orbit">Rotate the graph</label>
+    <input id="orbit" type="range" min="0" max="360" value="345" aria-describedby="orbit-help">
+    <p id="orbit-help" class="help">Drag the graph or move the slider.</p>
+  </section>
+  <section class="panel">
+    <fieldset>
+      <legend>Choose the input diagonals</legend>
+      <label class="choice"><input id="ac" type="checkbox" checked> Edge A–C</label>
+      <label class="choice"><input id="bd" type="checkbox"> Edge B–D</label>
+    </fieldset>
+    <div aria-live="polite">
+      <div class="metric"><small>Input count vs. 6</small><strong id="source-count"></strong></div>
+      <div class="metric"><small>Joined count vs. 8</small><strong id="join-count"></strong></div>
+      <div class="metric"><small>Final majority probability</small><strong id="probability"></strong></div>
+      <p class="verdict" id="verdict"></p>
+    </div>
+  </section>
+</div>
+<details class="panel">
+  <summary>Enumerated sets and selector calculation</summary>
+  <p id="set-list"></p>
+  <p>Every independent set in the join stays on one side. The empty set occurs on both sides, so the two counts sum with one subtracted.</p>
+  <p>The edge formula plus four forced-false variables has ten variables. Its probability is the joined count divided by 1,024, to be compared with 1/128. Akmal’s selector averages that probability with 127/128. The resulting fraction is compared with one half, with equality accepted.</p>
+</details>
+</main>
+<script>
+"use strict";
+const floor = [[0,1],[1,2],[2,3],[3,0]];
+const cross = [0,1,2,3].flatMap(u => [[u,4],[u,5]]);
+const top = [[4,5]];
+const names = ["A","B","C","D","E","F"];
+const points = [
+  [-.96,-.67,-.78],[.96,-.67,-.78],[.96,.67,-.78],[-.96,.67,-.78],
+  [-.62,-.13,.8],[.62,.13,.8],
+];
+const sourceColor = "#7be4d3";
+const paddingColor = "#ffc48a";
+const canvas = document.getElementById("scene");
+const pen = canvas.getContext("2d");
+const orbit = document.getElementById("orbit");
+const ac = document.getElementById("ac");
+const bd = document.getElementById("bd");
+
+function inputEdges() {
+  const edges = [...floor];
+  if (ac.checked) edges.push([0,2]);
+  if (bd.checked) edges.push([1,3]);
+  return edges;
+}
+
+function independentSets(vertices, edges) {
+  const sets = [];
+  for (let mask = 0; mask < (1 << vertices); mask += 1) {
+    const includes = index => (mask & (1 << index)) !== 0;
+    if (!edges.some(([u,v]) => includes(u) && includes(v))) {
+      sets.push(names.slice(0,vertices).filter((_,index) => includes(index)));
+    }
+  }
+  return sets;
+}
+
+function project([x,y,z], angle) {
+  const side = x*Math.cos(angle) - y*Math.sin(angle);
+  const toward = x*Math.sin(angle) + y*Math.cos(angle);
+  const vertical = z*Math.cos(.39) - toward*Math.sin(.39);
+  const depth = toward*Math.cos(.39) + z*Math.sin(.39);
+  const zoom = 7/(7-depth);
+  return {x:330+side*180*zoom, y:275-vertical*183*zoom, depth, zoom};
+}
+
+function draw() {
+  pen.clearRect(0,0,canvas.width,canvas.height);
+  const nodes = points.map(p => project(p, Number(orbit.value)*Math.PI/180));
+  const groups = [[cross,"#819abd",3],[inputEdges(),sourceColor,6],[top,paddingColor,6]];
+  pen.lineCap = "round";
+  for (const [edges,color,width] of groups) {
+    pen.strokeStyle = color;
+    pen.lineWidth = width;
+    for (const [u,v] of edges) {
+      pen.beginPath();
+      pen.moveTo(nodes[u].x,nodes[u].y);
+      pen.lineTo(nodes[v].x,nodes[v].y);
+      pen.stroke();
+    }
+  }
+  nodes.map((point,index) => ({...point,index})).sort((p,q) => p.depth-q.depth).forEach(p => {
+    pen.beginPath();
+    pen.arc(p.x,p.y,24*p.zoom,0,Math.PI*2);
+    pen.fillStyle = p.index < 4 ? sourceColor : paddingColor;
+    pen.fill();
+    pen.strokeStyle = "#182942";
+    pen.lineWidth = 4;
+    pen.stroke();
+    pen.fillStyle = "#101b2e";
+    pen.textAlign = "center";
+    pen.textBaseline = "middle";
+    pen.font = "bold 29px system-ui";
+    pen.fillText(names[p.index],p.x,p.y+1);
+  });
+}
+
+function update() {
+  const edges = inputEdges();
+  const sourceSets = independentSets(4,edges);
+  const joinSets = independentSets(6,[...edges,...top,...cross]);
+  const source = sourceSets.length;
+  const joined = joinSets.length;
+  const symbol = joined < 8 ? "<" : joined === 8 ? "=" : ">";
+  document.getElementById("source-count").textContent = source+" "+symbol+" 6";
+  document.getElementById("join-count").textContent = joined+" "+symbol+" 8";
+  const probability = joined === 8 ? "1/2" : (joined+1016)+"/2048";
+  document.getElementById("probability").textContent = probability;
+  const verdict = document.getElementById("verdict");
+  verdict.textContent = joined < 8 ? "Below half · Reject" : joined === 8 ? "Exactly half · Accept" : "Above half · Accept";
+  verdict.style.color = joined < 8 ? paddingColor : sourceColor;
+  const setNames = joinSets.map(s => s.length ? "{"+s.join(", ")+"}" : "∅");
+  document.getElementById("set-list").textContent = "Independent sets in the join: "+setNames.join(", ")+".";
+  draw();
+}
+
+ac.addEventListener("change",update);
+bd.addEventListener("change",update);
+orbit.addEventListener("input",draw);
+let lastX = null;
+canvas.addEventListener("pointerdown",event => {
+  if (event.button !== 0) return;
+  lastX = event.clientX;
+  canvas.setPointerCapture(event.pointerId);
+});
+canvas.addEventListener("pointermove",event => {
+  if (lastX === null) return;
+  orbit.value = (Number(orbit.value) + Math.round(1.4*(event.clientX-lastX)) + 3600)%360;
+  lastX = event.clientX;
+  draw();
+});
+for (const event of ["pointerup","pointercancel","lostpointercapture"]) {
+  canvas.addEventListener(event,() => {lastX = null;});
+}
+update();
+</script>
+</body>
+</html>

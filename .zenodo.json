@@ -1,0 +1,29 @@
+{
+  "title": "Majority-SAT for 3-CNFs with One Unrestricted Clause",
+  "upload_type": "software",
+  "publication_date": "2026-11-27",
+  "version": "1.0.0",
+  "creators": [
+    {
+      "name": "DannyExperiments"
+    }
+  ],
+  "description": "<p>Testing whether a 3-CNF conjoined with one unrestricted clause satisfies at least half of the uniform assignments is PP-complete under polynomial-time many-one reductions. The proof also establishes PP-completeness for comparing a 2-CNF's satisfaction probability to an input power-of-two threshold. These are Akmal's Open Problems 8 and 9.</p><p>The short proof normalizes an independent-set count threshold to a power of two and uses Akmal's selector. It credits the weighted prior of Cozman and Mauá, the threshold statement of Finster et al., and the prescribed-count graph of Chan and Pak.</p><p>Includes the manuscript, LaTeX and bibliography, exact replay, source and scope notes, and an interactive illustration. Internally reviewed.</p><p>Under human direction, ChatGPT Astra 6.2 (OpenAI) generated the discovery proof and its research packet. Claude Opus 5.5 (Anthropic) assisted with earlier audits and manuscript preparation. OpenAI Codex performed the mathematical review and revised the paper. GPT-6.2 Sol assisted with literature searches and release preparation. DannyExperiments maintains the repository and is the preferred citation identity. No AI system is proposed as an author.</p>",
+  "keywords": [
+    "Majority-SAT",
+    "counting complexity",
+    "2-CNF",
+    "independent sets",
+    "PP-completeness"
+  ],
+  "access_right": "open",
+  "license": "other-closed",
+  "notes": "All rights reserved. Publicly downloadable files are supplied without a repository-wide reuse license.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DannyExperiments/majority-3cnf-one-long-clause/releases/tag/v1.0.0",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

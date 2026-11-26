@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "Cite this version of the research release."
+title: "Majority-SAT for 3-CNFs with One Unrestricted Clause"
+authors:
+  - name: "DannyExperiments"
+type: software
+version: "1.0.0"
+date-released: 2026-11-27
+repository-code: "https://github.com/DannyExperiments/majority-3cnf-one-long-clause"
+keywords:
+  - "Majority-SAT"
+  - "counting complexity"
+  - "2-CNF"
+  - "independent sets"
+  - "PP-completeness"
+doi: "10.5281/zenodo.24569554"
+url: "https://doi.org/10.5281/zenodo.24569554"
+preferred-citation:
+  type: software
+  title: "Majority-SAT for 3-CNFs with One Unrestricted Clause"
+  authors:
+    - name: "DannyExperiments"
+  version: "1.0.0"
+  date-released: 2026-11-27
+  doi: "10.5281/zenodo.24569554"
+  url: "https://doi.org/10.5281/zenodo.24569554"
+  repository-code: "https://github.com/DannyExperiments/majority-3cnf-one-long-clause"

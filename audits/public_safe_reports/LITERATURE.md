@@ -1,0 +1,9 @@
+# Literature and source scope
+
+Akmal formulates the two exact questions on printed p. 94. His Lemma 4.11 gives the selector preserving equality. Akmal and Williams established NP-hardness under Turing reductions for the width-three one-long-clause case using factor-two approximation and explicitly raised the dyadic source problem. [Akmal’s dissertation](https://www.shyanakmal.com/publications/ShyanAkmal_PhD-Thesis.pdf#page=94), [Akmal–Williams, Theorem 7.2](https://arxiv.org/pdf/2107.02748v2#page=36).
+
+Finster et al. give the general-graph input-integer threshold statement in Appendix C.2, Problem 5 of their August 2026 revision. Their appendix uses that statement in its proof of the welfare result and takes the hardness premise as known. Cozman and Mauá’s earlier proof enforces exclusions among biased independent roots and isolates the dominant coefficient. A dyadic root of bias 1 − 2⁻ʳ can be represented by an OR of r fair bits. Each exclusion then expands to pairwise negative 2-clauses, yielding an unweighted input-integer comparison by the same dominance argument. [Finster et al., version 4](https://arxiv.org/html/2206.10660v4#A3.SS2), [Cozman–Mauá, Appendix A, Theorem 2](https://arxiv.org/pdf/1612.01120#page=26).
+
+Chan and Pak explicitly give the isolated and universal vertex construction realizing a prescribed independent-set count. The short reduction here uses that graph in a join to translate an arbitrary threshold to a power of two, then applies Akmal’s selector. The focused source check did not identify an earlier explicit classification of the exact input-dyadic or one-extra-clause languages. Priority remains open. [Chan–Pak, Example 5.8](https://arxiv.org/html/2308.10214#S5.SS1).
+
+Provan and Ball give exact bipartite independent-set counting hardness via interpolation, which gives threshold hardness via Turing reductions. The direct proof in this paper needs only general graphs. [Provan–Ball](https://doi.org/10.1137/0212053).

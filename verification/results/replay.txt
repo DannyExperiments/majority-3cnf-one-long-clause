@@ -1,0 +1,8 @@
+Prescribed count graphs: 127 exact counts.
+Twin replacement: 76 small graphs checked by enumeration.
+Consistency graph: 32 formulas and 128 exact threshold decisions.
+Graph example: I(B)=5, I(J)=7, Pr=1023/2048.
+Graph example: I(B)=6, I(J)=8, Pr=1/2.
+Graph example: I(B)=7, I(J)=9, Pr=1025/2048.
+Empty and isolated graphs: 4 exact endpoint checks.
+Q75 finite replay passed.
